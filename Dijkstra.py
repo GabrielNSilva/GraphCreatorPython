@@ -3,14 +3,14 @@ from copy import deepcopy
 # print(grafo)
 grafo = dict()
 grafo = {
-    "0": {"1": 6, "2": 1, "3": 5},
-    "1": {"0": 6, "2": 2, "4": 5},
-    "2": {"0": 1, "1": 2, "3": 2, "4": 6, "5": 4},
-    "3": {"0": 5, "2": 2, "5": 4},
-    "4": {"1": 5, "2": 6, "5": 3},
-    "5": {"2": 4, "3": 4, "4": 3}
+    "A": {"B": 1, "C": 3, "D": 2},
+    "B": {"A": 1, "D": 3, "F": 1},
+    "C": {"0": 1, "1": 2, "3": 2},
+    "D": {"0": 5, "2": 2, "5": 4, "0": 5, "2": 2, "5": 4},
+    "E": {"1": 5, "2": 6, "5": 3},
+    "F": {"1": 5, "2": 6, "5": 3},
+    "G": {"2": 4, "3": 4, "4": 3}
 }
-agm = dict()
 
 
 def ins_v(g, nome):
@@ -62,56 +62,31 @@ def mostra(g):
 			else:
 				for viz, p in es.items():
 					# print('\t\t'+v,'———',p,'———',viz)
-					print('\t\t'+v,'---',p,'---',viz)
+					print('\t\t'+v, '---', p, '---', viz)
 
 
-    # for v in g.keys():
-    #     if v not in agm:
-    #         agm[v] = dict()
-def gerar_agm():
-    print('GERANDO AGM....')
-    g = deepcopy(grafo)
-    agm = dict()
-    mostra(agm)
+def dijkstra(g, ini, fim):
+    print('Calculando menor caminho....')
+    caminho = list()
+    tabela = dict()
+    for no in g.key():
+        tabela[no] = {'dist': None, 'ant': None, 'fechado': False}
+    tabela[ini] = {'dist': 0, 'ant': None, 'fechado': True}
 
-    # selecionando um vertice qualquer para iniciar PRIM
-    keys = list(g.keys())
-    v = keys.pop()
-    ins_v(agm, v)
-    inseridos = [v]
-    print('Comecou pelo',v)
+    atual = ini
+    for viz in g[atual].key():
+        d = tabela[atual]['dist'] + g[atual][viz]
+        if not tabela[viz]['dist'] or d < tabela[viz]['dist']:
+            tabela[viz]['dist'] = d
 
-    while len(agm) < len(g):
-        print('Loop..............................................................................')
-        menor = dict()
-
-        # verifica aresta de menor peso entre os vertices inserido
-        print('Inseridos',inseridos)
-        for x in inseridos:
-            for y, p in g[x].items():
-                print('Verificando',x,'---',p,'---',y)
-                if not menor or p < menor['peso']:
-                    menor = {'viz': x, 'vertice': y, 'peso': p}
-                print('\tMENOR: ',menor['viz'],'---',menor['peso'],'---',menor['vertice'])
-
-        # Armazenando vertice na listagem dos inseridos
-        inseridos.append(menor['vertice'])
-        # Inserindo vertice e criando a aresta
-        ins_v(agm, menor['vertice'])
-        ins_e(agm, menor['vertice'], menor['viz'], menor['peso'])
-        print('Selecionada aresta',menor['viz'],'---',menor['peso'],'---',menor['vertice'])
-
-        # remove aresta do grafo base, para n re escolhe-la
-        rem_e(g, menor['vertice'], menor['viz'])
-        # break
-    return agm
+    return caminho
 
 
 while True:
 	print()
 	print('1. Cadastrar/Editar Grafo')
 	print('2. Visualizar Grafo')
-	print('3. Calcular AGM (Árvore Gradora Mínima) do grafo')
+	print('3. Calcular Menor Caminho (Dijkstra) entre dois vertices no grafo')
 	print('0. Sair')
 
 	op = input()
@@ -157,9 +132,9 @@ while True:
 	elif op == '2':
 		mostra(grafo)
 	elif op == '3':
-		agm = gerar_agm()
-		print('\n----------ÁRVORE GERADORA MÍNIMA----------')
-		mostra(agm)
+		caminho = dijkstra(grafo, "A", "G")
+		print('\n----------MENOR CAMINHO (Dijkstra)----------')
+		# mostra(caminho)
 	elif op == '0':
 		break
 	else:
