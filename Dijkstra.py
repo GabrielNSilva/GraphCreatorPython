@@ -3,13 +3,13 @@ from copy import deepcopy
 # print(grafo)
 grafo = dict()
 grafo = {
-    "A": {"B": 1, "C": 3, "D": 2},
-    "B": {"A": 1, "D": 3, "F": 1},
-    "C": {"0": 1, "1": 2, "3": 2},
-    "D": {"0": 5, "2": 2, "5": 4, "0": 5, "2": 2, "5": 4},
-    "E": {"1": 5, "2": 6, "5": 3},
-    "F": {"1": 5, "2": 6, "5": 3},
-    "G": {"2": 4, "3": 4, "4": 3}
+	"A": {"B": 1, "C": 3, "D": 2},
+	"B": {"A": 1, "D": 3, "F": 1},
+	"C": {"0": 1, "1": 2, "3": 2},
+	"D": {"0": 5, "2": 2, "5": 4, "0": 5, "2": 2, "5": 4},
+	"E": {"1": 5, "2": 6, "5": 3},
+	"F": {"1": 5, "2": 6, "5": 3},
+	"G": {"2": 4, "3": 4, "4": 3}
 }
 
 
@@ -65,21 +65,50 @@ def mostra(g):
 					print('\t\t'+v, '---', p, '---', viz)
 
 
+def print_tabela(t):
+	borda = '-'
+	titulo = '|'
+	distancias = '|'
+	anteriores = '|'
+	fechados = '|'
+	print('-','------'*len(t),sep='')
+	print('|',end='')
+	for v in t.keys():
+		print('  '+v+'  |',end='')
+		# print('Vertive ',v)
+		# print('Dados ',dados)
+		# print(type(dados))
+		# for key, val in dados.items():
+			# print('\t',key,' = ',val)
+	print('\n|',end='')
+	for dados in t.values():
+		print(dados)
+		dist = '∞' if not dados['dist'] else dados['dist']
+		print('{:4d} |'.format(dist),end='')
+
+	# print(borda)
+	# print(titulo)
+	# print('\t\tDistancia')
+	# print('\t\tAnterior')
+	# print('\t\tFechado')
+
+
 def dijkstra(g, ini, fim):
-    print('Calculando menor caminho....')
-    caminho = list()
-    tabela = dict()
-    for no in g.key():
-        tabela[no] = {'dist': None, 'ant': None, 'fechado': False}
-    tabela[ini] = {'dist': 0, 'ant': None, 'fechado': True}
+	print('Calculando menor caminho....')
+	caminho = list()
+	tabela = dict()
+	for no in g.keys():
+		tabela[no] = {'dist': None, 'ant': None, 'fechado': False}
+	tabela[ini] = {'dist': 0, 'ant': None, 'fechado': True}
 
-    atual = ini
-    for viz in g[atual].key():
-        d = tabela[atual]['dist'] + g[atual][viz]
-        if not tabela[viz]['dist'] or d < tabela[viz]['dist']:
-            tabela[viz]['dist'] = d
-
-    return caminho
+	atual = ini
+	for viz in g[atual].keys():
+		d = tabela[atual]['dist'] + g[atual][viz]
+		if not tabela[viz]['dist'] or d < tabela[viz]['dist']:
+			tabela[viz]['dist'] = d
+			tabela[viz]['ant'] = atual
+	print_tabela(tabela)
+	return caminho
 
 
 while True:
