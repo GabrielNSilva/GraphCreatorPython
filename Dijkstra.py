@@ -5,11 +5,11 @@ grafo = dict()
 grafo = {
 	"A": {"B": 1, "C": 3, "D": 2},
 	"B": {"A": 1, "D": 3, "F": 1},
-	"C": {"0": 1, "1": 2, "3": 2},
-	"D": {"0": 5, "2": 2, "5": 4, "0": 5, "2": 2, "5": 4},
-	"E": {"1": 5, "2": 6, "5": 3},
-	"F": {"1": 5, "2": 6, "5": 3},
-	"G": {"2": 4, "3": 4, "4": 3}
+	"C": {"A": 3, "D": 4, "E": 1},
+	"D": {"A": 2, "B": 3, "C": 4, "E": 3, "F": 1, "G": 4},
+	"E": {"C": 1, "D": 3, "E": 2},
+	"F": {"B": 1, "D": 1, "G": 2},
+	"G": {"E": 2, "D": 4, "F": 2}
 }
 
 
@@ -66,48 +66,72 @@ def mostra(g):
 
 
 def print_tabela(t):
-	borda = '-'
-	titulo = '|'
-	distancias = '|'
-	anteriores = '|'
-	fechados = '|'
 	print('-','------'*len(t),sep='')
 	print('|',end='')
 	for v in t.keys():
 		print('  '+v+'  |',end='')
-		# print('Vertive ',v)
-		# print('Dados ',dados)
-		# print(type(dados))
-		# for key, val in dados.items():
-			# print('\t',key,' = ',val)
-	print('\n|',end='')
-	for dados in t.values():
-		print(dados)
-		dist = '∞' if not dados['dist'] else dados['dist']
-		print('{:4d} |'.format(dist),end='')
 
-	# print(borda)
-	# print(titulo)
-	# print('\t\tDistancia')
-	# print('\t\tAnterior')
-	# print('\t\tFechado')
+	print('\n\t\tDistancia')
+	print('|',end='')
+	for dados in t.values():
+		# print(dados)
+		dist = ' ∞' if dados['dist']==None else dados['dist']
+		print(' {:2}  |'.format(dist),end='')
+
+	print('\n\t\tAnterior')
+	print('|',end='')
+	for dados in t.values():
+		# print(dados)
+		ant = ' ' if not dados['ant'] else dados['ant']
+		print('  {}  |'.format(ant),end='')
+
+	print('\n\t\tFechado')
+	print('|',end='')
+	for dados in t.values():
+		# print(dados)
+		fechado = 'X' if dados['fechado'] else ' '
+		print('  {}  |'.format(fechado),end='')
+
+	print('\n-','------'*len(t),sep='')
+	print()
 
 
 def dijkstra(g, ini, fim):
-	print('Calculando menor caminho....')
+	print('Calculando menor caminho....\n')
 	caminho = list()
 	tabela = dict()
-	for no in g.keys():
+	nodes = list(g.keys())
+	for no in nodes:
 		tabela[no] = {'dist': None, 'ant': None, 'fechado': False}
-	tabela[ini] = {'dist': 0, 'ant': None, 'fechado': True}
+	tabela[ini]['dist'] = 0
 
 	atual = ini
-	for viz in g[atual].keys():
-		d = tabela[atual]['dist'] + g[atual][viz]
-		if not tabela[viz]['dist'] or d < tabela[viz]['dist']:
-			tabela[viz]['dist'] = d
-			tabela[viz]['ant'] = atual
-	print_tabela(tabela)
+	while(atual != fim):
+		print('ATUAL:',atual)
+		for viz in g[atual].keys():
+			d = tabela[atual]['dist'] + g[atual][viz]
+			print('\t',viz,'=',d)
+			if tabela[viz]['dist']==None or d < tabela[viz]['dist']:
+				tabela[viz]['dist'] = d
+				tabela[viz]['ant'] = atual
+		nodes.remove(atual)
+		tabela[atual]['fechado'] = True
+		
+		print_tabela(tabela)
+
+		menor = dict()
+		for no in nodes:
+			d = tabela[no]['dist']
+			if d != None and (not menor or d < menor['dist']):
+				menor = {'node': no, 'dist': d}
+		atual = menor['node']
+
+	while atual != ini:
+		caminho.append(atual)
+		atual = tabela[atual]['ant']
+	caminho.append(atual)
+	# caminho.reverse()
+
 	return caminho
 
 
@@ -163,7 +187,12 @@ while True:
 	elif op == '3':
 		caminho = dijkstra(grafo, "A", "G")
 		print('\n----------MENOR CAMINHO (Dijkstra)----------')
-		# mostra(caminho)
+		print('\t',end='')
+		while len(caminho):
+			print(caminho.pop(),end='')
+			if len(caminho):
+				print(' -> ',end='')
+		print('\n')
 	elif op == '0':
 		break
 	else:
