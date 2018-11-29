@@ -27,7 +27,7 @@ def ins_e(g, n1, n2, p):
 
 def rem_v(g, v):
 	if v in g:
-		keys = list(g['n1'].keys())
+		keys = list(g[v].keys())
 		for k in keys:
 			g[k].pop(v)
 
